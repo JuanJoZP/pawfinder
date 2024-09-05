@@ -28,6 +28,6 @@ const POSTS: Post[] = [
   },
 ]
 
-export default function LostScreen() {
-  return <Feed posts_data={POSTS} title="perdidos"></Feed>
+export default function FoundScreen() {
+  return <Feed posts_data={POSTS} title="encontrados"></Feed>
 }
