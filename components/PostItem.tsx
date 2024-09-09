@@ -2,7 +2,7 @@ import { StyleSheet, Image, TouchableOpacity, View, Text } from "react-native"
 import { Feather } from "@expo/vector-icons"
 import { Avatar } from "react-native-paper"
 
-export type Post = {
+export type PostRender = {
   id: string
   username: string
   image: string
@@ -11,7 +11,7 @@ export type Post = {
   caption: string
 }
 
-export function PostItem({ username, avatar, image, likes, caption }: Post) {
+export function PostItem({ username, avatar, image, likes, caption }: PostRender) {
   return (
     <View style={styles.postItem}>
       <View style={styles.postHeader}>

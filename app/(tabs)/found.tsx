@@ -1,33 +1,49 @@
-import { Post } from "@/components/PostItem"
+import { PostRender } from "@/components/PostItem"
 import Feed from "@/components/Feed"
-
-const POSTS: Post[] = [
-  {
-    id: "1",
-    username: "john_doe",
-    image: "https://picsum.photos/400",
-    avatar: "https://picsum.photos/31",
-    likes: 1234,
-    caption: "Beautiful day!",
-  },
-  {
-    id: "2",
-    username: "jane_smith",
-    image: "https://picsum.photos/401",
-    avatar: "https://picsum.photos/32",
-    likes: 4321,
-    caption: "Living my best life",
-  },
-  {
-    id: "3",
-    username: "bob_johnson",
-    image: "https://picsum.photos/402",
-    avatar: "https://picsum.photos/33",
-    likes: 987,
-    caption: "Adventure time!",
-  },
-]
+import { useEffect, useState } from "react"
+import { ActivityIndicator, View } from "react-native"
+import { Post, User } from "@/database/types"
+import { useSQLiteContext } from "expo-sqlite"
 
 export default function FoundScreen() {
-  return <Feed posts_data={POSTS} title="encontrados"></Feed>
+  const [posts, setPosts] = useState<PostRender[] | null>(null)
+  const db = useSQLiteContext()
+  useEffect(() => {
+    if (db) {
+      const render_posts: PostRender[] = []
+
+      const db_result = db.getAllSync("SELECT * FROM posts WHERE category_id=3") as Post[]
+      db_result.forEach(dbPost => {
+        const { username, avatar_url } = db.getFirstSync(
+          `SELECT username, avatar_url FROM users WHERE id=${dbPost.user_id}`
+        ) as User
+        const count_likes = db.getFirstSync(
+          `SELECT COUNT(*) FROM likes WHERE post_id=${dbPost.id}`
+        ) as { "COUNT(*)": number }
+        const likes = count_likes["COUNT(*)"]
+        console.log(dbPost.image_url)
+
+        render_posts.push({
+          id: dbPost.id.toString(),
+          username: username,
+          image: dbPost.image_url,
+          avatar: avatar_url,
+          likes: likes,
+          caption: dbPost.caption,
+        })
+      })
+
+      setPosts(render_posts)
+    }
+  }, [db])
+
+  if (!posts) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
+
+  return <Feed posts_data={posts} title="Encontrados"></Feed>
 }
