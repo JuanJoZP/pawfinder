@@ -18,7 +18,10 @@ export function PostItem({ username, avatar, image, likes, caption }: PostRender
         <Avatar.Image size={32} source={{ uri: avatar }} style={styles.postAvatar} />
         <Text style={styles.postUsername}>{username}</Text>
       </View>
-      <Image source={{ uri: image }} style={styles.postImage} />
+      <Image
+        source={{ uri: `data:image/jpeg;base64,${image}` }}
+        style={styles.postImage}
+      />
       <View style={styles.postActions}>
         <TouchableOpacity>
           <Feather name="heart" size={24} color="black"></Feather>

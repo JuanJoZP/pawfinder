@@ -17,7 +17,7 @@ export interface Post {
   user_id: number
   category_id: number
   caption: string
-  image_url: string
+  image: string
   created_at: Date
 }
 

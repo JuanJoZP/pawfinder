@@ -68,12 +68,12 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
   if (currentDbVersion >= DATABASE_VERSION) {
     return
   }
-  if (currentDbVersion === 0) {
-    await db.execAsync(dropTables)
-    await db.execAsync(createTables)
-    await db.execAsync(insertDummy)
-    currentDbVersion = 1
-  }
+
+  await db.execAsync(dropTables)
+  await db.execAsync(createTables)
+  await db.execAsync(insertDummy)
+  currentDbVersion = 1
+
   // if (currentDbVersion === 1) {
   //   Add more migrations
   // }

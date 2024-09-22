@@ -1,26 +1,43 @@
-import { StyleSheet, View, Text, FlatList, SafeAreaView, StatusBar } from "react-native"
-import { Avatar } from "react-native-paper"
-import { useAssets } from "expo-asset"
-import { PostItem, Post } from "@/components/PostItem"
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native"
+import { PostItem, PostRender } from "@/components/PostItem"
+import { useState } from "react"
+import { CreatePostModal } from "@/components/CreatePostModal"
 
-export default function Feed({
-  posts_data,
-  title,
-}: {
-  posts_data: Post[]
+interface FeedProps {
+  posts_data: PostRender[]
   title: string
-}) {
+  handleCreatePost: (caption: string, image: string) => void
+}
+
+export default function Feed({ posts_data, title, handleCreatePost }: FeedProps) {
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false)
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={"dark-content"} />
       <View style={styles.header}>
-        <Text style={styles.headerText}>Pawfinder {title}</Text>
-        <Avatar.Image size={48} source={require("../assets/images/logo.png")} />
+        <Text style={styles.headerText}>{title}</Text>
+        <TouchableOpacity onPress={() => setIsCreatePostModalOpen(true)}>
+          <Text style={styles.newPostButton}>+ Post Nuevo</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={posts_data}
         renderItem={({ item }) => <PostItem {...item} />}
         keyExtractor={item => item.id}
+      />
+      <CreatePostModal
+        isVisible={isCreatePostModalOpen}
+        onClose={() => setIsCreatePostModalOpen(false)}
+        onCreatePost={handleCreatePost}
       />
     </SafeAreaView>
   )
@@ -44,5 +61,10 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
+  },
+  newPostButton: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
   },
 })

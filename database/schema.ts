@@ -26,7 +26,7 @@ export const createTables = `
     user_id integer,
     category_id integer,
     caption text not null,
-    image_url text not null,
+    image blob not null,
     created_at text default (datetime('now', 'utc')),
     foreign key (user_id) references users(id),
     foreign key (category_id) references categories(id)
@@ -75,45 +75,4 @@ values
     'hashed_password_3',
     'https://picsum.photos/33'
   );
-
-insert into
-  posts (user_id, category_id, caption, image_url)
-values
-  (
-    1,
-    1,
-    'Our golden retriever, Max, went missing near the park. He is very friendly.',
-    'https://picsum.photos/400'
-  ),
-  (
-    2,
-    2,
-    'Found a black cat with a white spot on its chest. Seems lost and scared.',
-    'https://picsum.photos/400'
-  ),
-  (
-    3,
-    3,
-    'We have successfully adopted a beagle named Charlie. He is adjusting well.',
-    'https://picsum.photos/400'
-  );
-
-insert into
-  comments (post_id, user_id, content)
-values
-  (
-    1,
-    2,
-    'I think I saw your dog near the lake yesterday.'
-  ),
-  (2, 1, 'Thank you for taking care of the cat!'),
-  (3, 2, 'Congratulations on the adoption!');
-
-insert into
-  likes (post_id, user_id)
-values
-  (1, 3),
-  (2, 1),
-  (3, 1),
-  (3, 2);
 `
