@@ -5,15 +5,18 @@ import { ActivityIndicator, View } from "react-native"
 import { Post, User } from "@/database/types"
 import { useSQLiteContext } from "expo-sqlite"
 import * as FileSystem from "expo-file-system"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function AdoptedScreen() {
   const [posts, setPosts] = useState<PostRender[] | null>(null)
   const db = useSQLiteContext()
+  const { userId } = useAuth()
+
   useEffect(() => {
     if (db) {
       const render_posts: PostRender[] = []
 
-      const db_result = db.getAllSync("SELECT * FROM posts WHERE category_id=2") as Post[]
+      const db_result = db.getAllSync("SELECT * FROM posts WHERE category_id=3") as Post[]
       db_result.forEach(dbPost => {
         const { username, avatar_url } = db.getFirstSync(
           `SELECT username, avatar_url FROM users WHERE id=${dbPost.user_id}`
@@ -42,8 +45,7 @@ export default function AdoptedScreen() {
       const base64Image = await FileSystem.readAsStringAsync(image, {
         encoding: FileSystem.EncodingType.Base64,
       })
-      const userId = 1
-      const categoryId = 1
+      const categoryId = 3
 
       try {
         const result = db.runSync(

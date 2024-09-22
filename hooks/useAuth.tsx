@@ -3,6 +3,7 @@ import { useSQLiteContext } from "expo-sqlite"
 
 interface AuthContextType {
   isAuthenticated: boolean
+  userId: number | null
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   signup: (
@@ -21,22 +22,25 @@ export const AuthProvider = ({
   children: React.ReactNode
 }): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userId, setUserId] = useState<number | null>(null)
 
   const db = useSQLiteContext()
 
   const login = async (email: string, password: string) => {
     const statement = db.prepareSync(
-      "SELECT 1 FROM users WHERE email=$email AND password_hash=$password"
+      "SELECT id FROM users WHERE email=$email AND password_hash=$password"
     )
     try {
-      let result = statement.executeSync<{ "1": number }>({
+      let result = statement.executeSync<{ id: number }>({
         $email: email,
         $password: password,
       })
-      if (!result.getFirstSync()) {
+      const user = result.getFirstSync()
+      if (!user) {
         throw new Error("Inicio de sesión fallido. Revise sus credenciales")
       }
 
+      setUserId(user.id)
       setIsAuthenticated(true)
     } catch (error) {
       throw error
@@ -75,6 +79,8 @@ export const AuthProvider = ({
         $avatar_url: `https://picsum.photos/${Math.floor(Math.random() * 1000)}`, // Random avatar
       })
 
+      setUserId(result.lastInsertRowId)
+
       insertStatement.finalizeSync()
 
       if (result.changes && result.changes > 0) {
@@ -89,7 +95,7 @@ export const AuthProvider = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, signup }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, login, logout, signup }}>
       {children}
     </AuthContext.Provider>
   )
