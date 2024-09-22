@@ -5,11 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  View,
   Alert,
 } from "react-native"
 import { useAuth } from "@/hooks/useAuth"
 import { useRouter } from "expo-router"
-
+import { Avatar } from "react-native-paper"
 export default function SignUpScreen() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -34,6 +35,9 @@ export default function SignUpScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Avatar.Image size={128} source={require("../../assets/images/logo.png")} />
+      </View>
       <Text style={styles.title}>Registrate</Text>
       <TextInput
         style={styles.input}
@@ -107,5 +111,9 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     marginTop: 15,
     textAlign: "center",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 20,
   },
 })

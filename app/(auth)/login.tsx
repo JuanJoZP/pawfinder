@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  View,
 } from "react-native"
 import { useAuth } from "@/hooks/useAuth"
 import { useRouter } from "expo-router"
+import { Avatar } from "react-native-paper"
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("")
@@ -30,7 +32,10 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <View style={styles.logoContainer}>
+        <Avatar.Image size={128} source={require("../../assets/images/logo.png")} />
+      </View>
+      <Text style={styles.title}>Iniciar Sesión</Text>
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
@@ -91,5 +96,9 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     marginTop: 15,
     textAlign: "center",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 20,
   },
 })
