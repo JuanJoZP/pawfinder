@@ -60,7 +60,7 @@ export default function RootLayout() {
 }
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const DATABASE_VERSION = 1
+  const DATABASE_VERSION = 2
   let { user_version: currentDbVersion } = (await db.getFirstAsync(
     "PRAGMA user_version"
   )) as { user_version: number }
@@ -72,7 +72,7 @@ async function migrateDbIfNeeded(db: SQLiteDatabase) {
   await db.execAsync(dropTables)
   await db.execAsync(createTables)
   await db.execAsync(insertDummy)
-  currentDbVersion = 1
+  currentDbVersion = 2
 
   // if (currentDbVersion === 1) {
   //   Add more migrations
