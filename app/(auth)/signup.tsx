@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
@@ -7,36 +7,37 @@ import {
   SafeAreaView,
   View,
   Alert,
-} from "react-native"
-import { useAuth } from "@/hooks/useAuth"
-import { useRouter } from "expo-router"
-import { Avatar } from "react-native-paper"
+} from "react-native";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "expo-router";
+import { Avatar } from "react-native-paper";
 export default function SignUpScreen() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [username, setUsername] = useState("")
-  const { signup } = useAuth()
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const { signup } = useAuth();
+  const router = useRouter();
 
   const handleSignUp = async () => {
     try {
-      await signup(email, password, confirmPassword, username)
-      router.replace("/")
+      await signup(email, password, confirmPassword, username);
+      router.replace("/");
     } catch (error) {
       Alert.alert(
         "Error de registro",
-        error instanceof Error
-          ? error.message
-          : "Ha ocurrido un error durante el registro."
-      )
+        "El correo electrónico ya se encuentra registrado."
+      );
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
-        <Avatar.Image size={128} source={require("../../assets/images/logo.png")} />
+        <Avatar.Image
+          size={128}
+          source={require("../../assets/images/logo.png")}
+        />
       </View>
       <Text style={styles.title}>Registrate</Text>
       <TextInput
@@ -74,7 +75,7 @@ export default function SignUpScreen() {
         <Text style={styles.linkText}>Ya tienes una cuenta? Inicia sesión</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -116,4 +117,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-})
+});
