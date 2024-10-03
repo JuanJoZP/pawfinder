@@ -6,19 +6,30 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
-} from "react-native"
-import { PostItem, PostRender } from "@/components/PostItem"
-import { useState } from "react"
-import { CreatePostModal } from "@/components/CreatePostModal"
+} from "react-native";
+import { PostItem, PostRender } from "@/components/PostItem";
+import { useState } from "react";
+import { CreatePostModal } from "@/components/CreatePostModal";
 
 interface FeedProps {
-  posts_data: PostRender[]
-  title: string
-  handleCreatePost: (caption: string, image: string) => void
+  posts_data: PostRender[];
+  title: string;
+  handleCreatePost: (caption: string, image: string) => void;
+  handlePutLike: (post_id: string) => void;
+  handleRemoveLike: (post_id: string) => void;
+  handleComment: (post_id: string, content: string) => void;
 }
 
-export default function Feed({ posts_data, title, handleCreatePost }: FeedProps) {
-  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false)
+// recibe nuevos: handleLike, handleComment
+export default function Feed({
+  posts_data,
+  title,
+  handleCreatePost,
+  handlePutLike,
+  handleRemoveLike,
+  handleComment,
+}: FeedProps) {
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,8 +42,15 @@ export default function Feed({ posts_data, title, handleCreatePost }: FeedProps)
       </View>
       <FlatList
         data={posts_data}
-        renderItem={({ item }) => <PostItem {...item} />}
-        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <PostItem
+            post_data={item}
+            handleComment={handleComment}
+            handlePutLike={handlePutLike}
+            handleRemoveLike={handleRemoveLike}
+          />
+        )}
+        keyExtractor={(item) => item.id}
       />
       <CreatePostModal
         isVisible={isCreatePostModalOpen}
@@ -40,7 +58,7 @@ export default function Feed({ posts_data, title, handleCreatePost }: FeedProps)
         onCreatePost={handleCreatePost}
       />
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -67,4 +85,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
   },
-})
+});
