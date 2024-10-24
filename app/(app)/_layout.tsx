@@ -1,18 +1,18 @@
-import { Tabs } from "expo-router"
-import React from "react"
-import { TabBarIcon } from "@/components/navigation/TabBarIcon"
-import { Colors } from "@/constants/Colors"
-import { useColorScheme } from "@/hooks/useColorScheme"
-import { useAuth } from "@/hooks/useAuth"
-import { Redirect } from "expo-router"
+import { Tabs } from "expo-router";
+import React from "react";
+import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useAuth } from "@/hooks/useAuth";
+import { Redirect } from "expo-router";
 
 export default function AppLayout() {
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
 
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Redirect href="/login" />
+    return <Redirect href="/login" />;
   }
 
   return (
@@ -27,7 +27,10 @@ export default function AppLayout() {
         options={{
           title: "Perdidos",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? "search" : "search-outline"} color={color} />
+            <TabBarIcon
+              name={focused ? "search" : "search-outline"}
+              color={color}
+            />
           ),
         }}
       />
@@ -45,10 +48,13 @@ export default function AppLayout() {
         options={{
           title: "Adoptados",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />
+            <TabBarIcon
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
           ),
         }}
       />
     </Tabs>
-  )
+  );
 }

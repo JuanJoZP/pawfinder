@@ -10,8 +10,6 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { SQLiteProvider, type SQLiteDatabase } from "expo-sqlite";
-import { createTables, dropTables, insertDummy } from "@/database/schema";
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -55,31 +53,8 @@ export default function RootLayout() {
   }
 
   return (
-    <SQLiteProvider databaseName="database" onInit={migrateDbIfNeeded}>
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
-    </SQLiteProvider>
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
-}
-
-async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const DATABASE_VERSION = 3;
-  let { user_version: currentDbVersion } = (await db.getFirstAsync(
-    "PRAGMA user_version"
-  )) as { user_version: number };
-
-  if (currentDbVersion >= DATABASE_VERSION) {
-    return;
-  }
-
-  await db.execAsync(dropTables);
-  await db.execAsync(createTables);
-  await db.execAsync(insertDummy);
-  currentDbVersion = 3;
-
-  // if (currentDbVersion === 1) {
-  //   Add more migrations
-  // }
-  await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 }

@@ -1,61 +1,65 @@
-import React, { createContext, useContext, useState, useEffect } from "react"
-import { useSQLiteContext } from "expo-sqlite"
+import React, { createContext, useContext, useState } from "react";
 
 interface AuthContextType {
-  isAuthenticated: boolean
-  userId: number | null
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  isAuthenticated: boolean;
+  userId: number | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
   signup: (
     email: string,
     password: string,
     confirmPassword: string,
     username: string
-  ) => Promise<void>
+  ) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }): JSX.Element => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [userId, setUserId] = useState<number | null>(null)
-
-  const db = useSQLiteContext()
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   const login = async (email: string, password: string) => {
-    const statement = db.prepareSync(
-      "SELECT id FROM users WHERE email=$email AND password_hash=$password"
-    )
     try {
-      let result = statement.executeSync<{ id: number }>({
-        $email: email,
-        $password: password,
-      })
-      const user = result.getFirstSync()
-      if (!user) {
-        throw new Error("Inicio de sesión fallido. Revise sus credenciales")
+      const response = await fetch("https://pawfinder-api.onrender.com/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message ||
+            "Inicio de sesión fallido. Revise sus credenciales"
+        );
       }
 
-      setUserId(user.id)
-      setIsAuthenticated(true)
+      const data = await response.json();
+      const userId = data.userId; // Adjust this based on your API response structure
+      setUserId(userId);
+      setIsAuthenticated(true);
     } catch (error) {
-      throw error
-    } finally {
-      statement.finalizeSync()
+      throw error;
     }
-  }
+  };
 
   const logout = async () => {
     try {
-      setIsAuthenticated(false)
+      setIsAuthenticated(false);
     } catch (error) {
-      console.error("Logout error:", error)
+      console.error("Logout error:", error);
     }
-  }
+  };
 
   const signup = async (
     email: string,
@@ -65,46 +69,58 @@ export const AuthProvider = ({
   ) => {
     try {
       if (password !== confirmPassword) {
-        throw new Error("Las contraseñas no coinciden")
+        throw new Error("Las contraseñas no coinciden");
       }
 
-      const insertStatement = db.prepareSync(
-        "INSERT INTO users (email, password_hash, username, avatar_url) VALUES ($email, $password, $username, $avatar_url)"
-      )
+      const avatarUrl = `https://picsum.photos/${Math.floor(
+        Math.random() * 1000
+      )}`; // Random avatar
 
-      const result = insertStatement.executeSync({
-        $email: email,
-        $password: password, // en una aplicacion real se deberia hashear
-        $username: username,
-        $avatar_url: `https://picsum.photos/${Math.floor(Math.random() * 1000)}`, // Random avatar
-      })
+      const response = await fetch(
+        "https://pawfinder-api.onrender.com/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password, // In a real application, you should hash this
+            username: username,
+            avatar_url: avatarUrl,
+          }),
+        }
+      );
 
-      setUserId(result.lastInsertRowId)
-
-      insertStatement.finalizeSync()
-
-      if (result.changes && result.changes > 0) {
-        setIsAuthenticated(true)
-      } else {
-        throw new Error("No se pudo crear el usuario")
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "No se pudo crear el usuario");
       }
+
+      const data = await response.json();
+      // Assuming the API returns the user ID in the response
+      const userId = data.userId; // Adjust this based on your API response structure
+      setUserId(userId);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error("Signup error:", error)
-      throw error
+      console.error("Signup error:", error);
+      throw error;
     }
-  }
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userId, login, logout, signup }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, userId, login, logout, signup }}
+    >
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
 }
